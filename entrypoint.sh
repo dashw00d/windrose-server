@@ -32,28 +32,10 @@ echo "[entrypoint] Running SteamCMD app_update for $APP_ID"
   +app_update "$APP_ID" validate \
   +quit
 
-CONFIG_FILE="$INSTALL_DIR/ServerDescription.json"
-if [ ! -f "$CONFIG_FILE" ]; then
-  echo "[entrypoint] Seeding $CONFIG_FILE from env vars"
-  if [ -n "${SERVER_PASSWORD:-}" ]; then
-    PW_PROTECTED=true
-  else
-    PW_PROTECTED=false
-  fi
-  cat > "$CONFIG_FILE" <<JSON
-{
-  "ServerName": "${SERVER_NAME:-Windrose Server}",
-  "InviteCode": "${INVITE_CODE:-}",
-  "IsPasswordProtected": $PW_PROTECTED,
-  "Password": "${SERVER_PASSWORD:-}",
-  "MaxPlayerCount": ${MAX_PLAYERS:-8},
-  "WorldIslandId": "${WORLD_ISLAND_ID:-Default}",
-  "P2pProxyAddress": "${P2P_PROXY_ADDRESS:-}"
-}
-JSON
-else
-  echo "[entrypoint] $CONFIG_FILE exists — leaving as-is (edit via volume to change)"
-fi
+# The server creates ServerDescription.json itself in R5/ with its own schema
+# (Version, DeploymentId, nested ServerDescription_Persistent object) on first
+# boot. Don't pre-seed — just delete any bogus flat-schema file from prior runs.
+rm -f "$INSTALL_DIR/ServerDescription.json"
 
 cd "$INSTALL_DIR"
 
@@ -62,5 +44,5 @@ Xvfb :99 -screen 0 1024x768x16 &
 export DISPLAY=:99
 sleep 1
 
-echo "[entrypoint] Launching $SERVER_EXE under wine"
-exec wine "$SERVER_EXE"
+echo "[entrypoint] Launching $SERVER_EXE under wine (with -log)"
+exec wine "$SERVER_EXE" -log
