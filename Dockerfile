@@ -27,9 +27,8 @@ RUN useradd -m -u 1000 steam \
       | tar -xz -C /home/steam/steamcmd \
  && chown -R steam:steam /home/steam
 
-COPY --chown=steam:steam entrypoint.sh /entrypoint.sh
+COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-USER steam
 WORKDIR /home/steam
 ENTRYPOINT ["/entrypoint.sh"]

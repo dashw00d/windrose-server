@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Named volumes mounted on /home/steam/.wine and /home/steam/windrose come up
+# owned by root; wine refuses to use a prefix it doesn't own. Fix ownership as
+# root on first boot, then re-exec as the `steam` user.
+if [ "$(id -u)" = "0" ]; then
+  chown -R steam:steam /home/steam/.wine /home/steam/windrose 2>/dev/null || true
+  exec runuser -u steam -- /entrypoint.sh
+fi
+
 STEAMCMD=/home/steam/steamcmd/steamcmd.sh
 INSTALL_DIR=/home/steam/windrose
 APP_ID="${STEAM_APP_ID:-4129620}"
