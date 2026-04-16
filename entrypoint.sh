@@ -63,4 +63,4 @@ export DISPLAY=:99
 sleep 1
 
 echo "[entrypoint] Launching $SERVER_EXE under wine"
-exec wine64 "$SERVER_EXE"
+exec wine "$SERVER_EXE"
