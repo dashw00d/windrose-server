@@ -12,7 +12,13 @@ fi
 STEAMCMD=/home/steam/steamcmd/steamcmd.sh
 INSTALL_DIR=/home/steam/windrose
 APP_ID="${STEAM_APP_ID:-4129620}"
-SERVER_EXE="WindroseServer.exe"
+# Skip the 260KB WindroseServer.exe bootstrapper — it doesn't spawn the real
+# binary under wine+Xvfb. Invoke the real UE5 Shipping server directly.
+SERVER_EXE="R5/Binaries/Win64/WindroseServer-Win64-Shipping.exe"
+
+# Let wine print errors/warnings (default WINEDEBUG=-all suppresses everything
+# including module-load failures); keeps fixme spam down with +all:-fixme.
+export WINEDEBUG="err+all,warn+module,fixme-all"
 
 if [ ! -f "$WINEPREFIX/system.reg" ]; then
   echo "[entrypoint] Initializing wine prefix at $WINEPREFIX"
