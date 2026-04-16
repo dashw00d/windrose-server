@@ -1,0 +1,31 @@
+services:
+  windrose:
+    build: .
+    restart: unless-stopped
+    # Windrose uses NAT punch-through with dynamically assigned ports —
+    # we cannot predict which UDP port the server will bind to, so we share
+    # the host network stack instead of forwarding specific ports.
+    network_mode: host
+    environment:
+      STEAM_APP_ID: "4129620"
+      SERVER_NAME: "Windrose Server"
+      INVITE_CODE: ""
+      SERVER_PASSWORD: ""
+      MAX_PLAYERS: "8"
+      WORLD_ISLAND_ID: "Default"
+      P2P_PROXY_ADDRESS: ""
+    volumes:
+      - windrose_install:/home/steam/windrose
+      - windrose_wine:/home/steam/.wine
+    deploy:
+      resources:
+        limits:
+          memory: 12G
+        reservations:
+          memory: 8G
+
+volumes:
+  windrose_install:
+    name: windrose_install
+  windrose_wine:
+    name: windrose_wine
